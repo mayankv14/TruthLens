@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>TruthLens | Sign In</title>
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+</head>
+
+
+<body>
+
+
+<header class="navbar">
+
+    <div class="nav-inner">
+
+        <a
+            href="/"
+            class="brand"
+        >
+
+            <div class="brand-mark">
+                TL
+            </div>
+
+            <div class="brand-name">
+                Truth<span>Lens</span>
+            </div>
+
+        </a>
+
+
+        <div class="nav-right">
+
+            <div class="status">
+
+                <span class="status-dot"></span>
+
+                System online
+
+            </div>
+
+            <a
+                href="/register"
+                class="nav-cta"
+            >
+                Create account
+            </a>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+
+<main class="auth-page">
+
+
+    <section class="auth-card">
+
+
+        <div class="auth-header">
+
+            <div class="eyebrow">
+
+                <span class="eyebrow-dot"></span>
+
+                WELCOME BACK
+
+            </div>
+
+
+            <h1>
+                Sign in to <span>TruthLens.</span>
+            </h1>
+
+
+            <p>
+                Access your verification history
+                and continue checking claims.
+            </p>
+
+        </div>
+
+
+
+        <form
+            id="loginForm"
+            class="auth-form"
+        >
+
+
+            <div class="form-group">
+
+                <label for="email">
+                    Email address
+                </label>
+
+                <input
+                    type="email"
+                    id="email"
+                    placeholder="you@example.com"
+                    autocomplete="email"
+                    required
+                >
+
+            </div>
+
+
+
+            <div class="form-group">
+
+                <label for="password">
+                    Password
+                </label>
+
+                <input
+                    type="password"
+                    id="password"
+                    placeholder="Enter your password"
+                    autocomplete="current-password"
+                    required
+                >
+
+            </div>
+
+
+
+            <div
+                id="authMessage"
+                class="auth-message"
+            ></div>
+
+
+
+            <button
+                type="submit"
+                class="verify-btn auth-submit"
+                id="loginBtn"
+            >
+
+                <span id="loginText">
+                    Sign in
+                </span>
+
+                <span class="arrow">
+                    →
+                </span>
+
+            </button>
+
+
+        </form>
+
+
+
+        <div class="auth-footer">
+
+            Don't have an account?
+
+            <a href="/register">
+                Create one
+            </a>
+
+        </div>
+
+
+    </section>
+
+
+</main>
+
+
+
+<script>
+
+const loginForm =
+    document.getElementById(
+        "loginForm"
+    );
+
+
+const loginBtn =
+    document.getElementById(
+        "loginBtn"
+    );
+
+
+const loginText =
+    document.getElementById(
+        "loginText"
+    );
+
+
+const authMessage =
+    document.getElementById(
+        "authMessage"
+    );
+
+
+loginForm.addEventListener(
+    "submit",
+    async function(event) {
+
+        event.preventDefault();
+
+
+        const email =
+            document.getElementById(
+                "email"
+            ).value.trim();
+
+
+        const password =
+            document.getElementById(
+                "password"
+            ).value;
+
+
+        authMessage.textContent =
+            "";
+
+        authMessage.className =
+            "auth-message";
+
+
+        loginBtn.disabled =
+            true;
+
+        loginText.textContent =
+            "Signing in...";
+
+
+        try {
+
+            const response =
+                await fetch(
+                    "/api/auth/login",
+                    {
+
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body:
+                            JSON.stringify({
+                                email,
+                                password
+                            })
+
+                    }
+                );
+
+
+            const data =
+                await response.json();
+
+
+            if (!response.ok) {
+
+                authMessage.textContent =
+                    data.error ||
+                    "Invalid email or password.";
+
+                authMessage.classList.add(
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            /*
+             * Store JWT
+             */
+
+            localStorage.setItem(
+                "truthlens_token",
+                data.token
+            );
+
+
+            /*
+             * Store user information
+             */
+
+            localStorage.setItem(
+                "truthlens_user",
+                JSON.stringify(
+                    data.user
+                )
+            );
+
+
+            authMessage.textContent =
+                "Login successful.";
+
+            authMessage.classList.add(
+                "success"
+            );
+
+
+            setTimeout(
+                function() {
+
+                    window.location.href =
+                        "/";
+
+                },
+                500
+            );
+
+
+        }
+        catch (error) {
+
+            console.error(error);
+
+
+            authMessage.textContent =
+                "Unable to connect to the server.";
+
+            authMessage.classList.add(
+                "error"
+            );
+
+        }
+        finally {
+
+            loginBtn.disabled =
+                false;
+
+            loginText.textContent =
+                "Sign in";
+
+        }
+
+    }
+);
+
+</script>
+
+
+</body>
+
+</html>

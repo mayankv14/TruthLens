@@ -1,0 +1,2839 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="TruthLens helps verify claims and news using machine learning and fact-checking evidence."
+    >
+
+    <title>TruthLens | Verify Before You Believe</title>
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+    <style>
+
+        /* =====================================================
+           INVESTIGATION MODE
+        ===================================================== */
+
+        .investigation-section {
+            display: none;
+            width: 100%;
+            max-width: 1100px;
+            margin: 28px auto 0;
+            padding: 0 20px;
+        }
+
+        .investigation-card {
+            background: #111111;
+            border: 1px solid #252525;
+            border-radius: 24px;
+            padding: 34px;
+            box-shadow:
+                0 20px 60px rgba(0, 0, 0, 0.25);
+        }
+
+        .investigation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 24px;
+            margin-bottom: 30px;
+        }
+
+        .investigation-header h2 {
+            margin: 8px 0 8px;
+            font-size: 28px;
+            line-height: 1.2;
+            color: #ffffff;
+        }
+
+        .investigation-header p {
+            margin: 0;
+            color: #8f8f8f;
+            font-size: 15px;
+        }
+
+        .investigation-icon {
+            width: 52px;
+            height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 14px;
+            background: #1b1b1b;
+            border: 1px solid #2b2b2b;
+            font-size: 23px;
+        }
+
+        .investigation-block {
+            padding: 22px 0;
+            border-top: 1px solid #242424;
+        }
+
+        .investigation-label {
+            display: block;
+            margin-bottom: 10px;
+            color: #777777;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+        }
+
+        .investigation-claim {
+            padding: 18px;
+            background: #171717;
+            border: 1px solid #242424;
+            border-radius: 14px;
+            color: #eeeeee;
+            font-size: 15px;
+            line-height: 1.7;
+            word-break: break-word;
+        }
+
+        .investigation-text {
+            margin: 0;
+            color: #b5b5b5;
+            font-size: 15px;
+            line-height: 1.7;
+        }
+
+        .investigation-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+            padding: 22px 0;
+            border-top: 1px solid #242424;
+        }
+
+        .investigation-stat {
+            padding: 18px;
+            background: #171717;
+            border: 1px solid #242424;
+            border-radius: 14px;
+        }
+
+        .investigation-stat span {
+            display: block;
+            margin-bottom: 9px;
+            color: #777777;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+        }
+
+        .investigation-stat strong {
+            display: block;
+            color: #eeeeee;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .investigation-explanation {
+            display: flex;
+            gap: 14px;
+            margin-top: 8px;
+            padding: 20px;
+            background: #151515;
+            border: 1px solid #292929;
+            border-radius: 16px;
+        }
+
+        .explanation-icon {
+            flex-shrink: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: #242424;
+            color: #cccccc;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .investigation-explanation strong {
+            display: block;
+            margin-bottom: 6px;
+            color: #ffffff;
+            font-size: 14px;
+        }
+
+        .investigation-explanation p {
+            margin: 0;
+            color: #999999;
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+
+        /* =====================================================
+           CLAIM DECOMPOSITION
+        ===================================================== */
+
+        .claim-decomposition-section {
+            display: none;
+            width: 100%;
+            max-width: 1100px;
+            margin: 28px auto 0;
+            padding: 0 20px;
+        }
+
+        .claim-decomposition-card {
+            background: #111111;
+            border: 1px solid #252525;
+            border-radius: 24px;
+            padding: 34px;
+            box-shadow:
+                0 20px 60px rgba(0, 0, 0, 0.25);
+        }
+
+        .claim-decomposition-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 24px;
+            margin-bottom: 30px;
+        }
+
+        .claim-decomposition-header h2 {
+            margin: 8px 0;
+            font-size: 28px;
+            line-height: 1.2;
+            color: #ffffff;
+        }
+
+        .claim-decomposition-header p {
+            margin: 0;
+            color: #8f8f8f;
+            font-size: 15px;
+        }
+
+        .claim-decomposition-icon {
+            width: 52px;
+            height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 14px;
+            background: #1b1b1b;
+            border: 1px solid #2b2b2b;
+            font-size: 23px;
+        }
+
+        .claim-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .claim-item {
+            padding: 20px;
+            background: #171717;
+            border: 1px solid #282828;
+            border-radius: 16px;
+        }
+
+        .claim-item-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 12px;
+        }
+
+        .claim-number {
+            color: #777777;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+        }
+
+        .claim-status {
+            padding: 6px 10px;
+            border-radius: 20px;
+            background: #222222;
+            color: #bbbbbb;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+        }
+
+        .claim-text {
+            margin: 0 0 14px;
+            color: #eeeeee;
+            font-size: 15px;
+            line-height: 1.7;
+        }
+
+        .claim-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 18px;
+            padding-top: 13px;
+            border-top: 1px solid #252525;
+        }
+
+        .claim-detail {
+            color: #888888;
+            font-size: 12px;
+        }
+
+        .claim-detail strong {
+            color: #cccccc;
+        }
+
+        .claim-evidence {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #252525;
+            color: #999999;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .claim-evidence strong {
+            color: #cccccc;
+        }
+
+
+        @media (max-width: 760px) {
+
+            .investigation-section {
+                padding: 0 14px;
+            }
+
+            .investigation-card {
+                padding: 24px;
+                border-radius: 18px;
+            }
+
+            .investigation-header {
+                flex-direction: column;
+            }
+
+            .investigation-header h2 {
+                font-size: 23px;
+            }
+
+            .investigation-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .claim-decomposition-section {
+                padding: 0 14px;
+            }
+
+            .claim-decomposition-card {
+                padding: 24px;
+                border-radius: 18px;
+            }
+
+            .claim-decomposition-header {
+                flex-direction: column;
+            }
+
+            .claim-decomposition-header h2 {
+                font-size: 23px;
+            }
+
+            .claim-item-top {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     NAVBAR
+===================================================== -->
+
+<header class="navbar">
+
+    <div class="nav-inner">
+
+        <a
+            href="/"
+            class="brand"
+        >
+
+            <div class="brand-mark">
+                TL
+            </div>
+
+            <div class="brand-name">
+                Truth<span>Lens</span>
+            </div>
+
+        </a>
+
+
+        <nav class="nav-links">
+
+            <a
+                href="#verify"
+                class="active"
+            >
+                Verify
+            </a>
+
+            <a href="#how-it-works">
+                How it works
+            </a>
+
+            <a href="/history">
+                History
+            </a>
+
+        </nav>
+
+
+        <div class="nav-right">
+
+            <div class="status">
+
+                <span class="status-dot"></span>
+
+                System online
+
+            </div>
+
+
+            <div
+                id="authNav"
+                style="
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                "
+            >
+
+                <!-- JavaScript will fill this -->
+
+            </div>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+
+<!-- =====================================================
+     HERO
+===================================================== -->
+
+<main>
+
+<section class="hero-section">
+
+    <div class="hero-glow"></div>
+
+    <div class="hero-content">
+
+        <div class="eyebrow">
+
+            <span class="eyebrow-dot"></span>
+
+            AI-POWERED VERIFICATION
+
+        </div>
+
+
+        <h1>
+
+            The internet is loud.
+
+            <br>
+
+            <span>Truth shouldn't be.</span>
+
+        </h1>
+
+
+        <p class="hero-text">
+
+            Verify claims, discover fact-checking evidence,
+            and understand what the available information
+            actually says.
+
+        </p>
+
+
+        <div class="hero-trust">
+
+            <div>
+
+                <span class="trust-check">
+                    ✓
+                </span>
+
+                Machine learning
+
+            </div>
+
+
+            <div>
+
+                <span class="trust-check">
+                    ✓
+                </span>
+
+                Fact-check sources
+
+            </div>
+
+
+            <div>
+
+                <span class="trust-check">
+                    ✓
+                </span>
+
+                Evidence first
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     VERIFICATION WORKSPACE
+===================================================== -->
+
+<section
+    class="workspace-section"
+    id="verify"
+>
+
+    <div class="workspace-card">
+
+        <div class="workspace-top">
+
+            <div>
+
+                <div class="workspace-kicker">
+                    TRUTHLENS CHECK
+                </div>
+
+                <h2>
+                    What do you want to verify?
+                </h2>
+
+                <p>
+                    Paste a claim, headline, statement,
+                    or news article below.
+                </p>
+
+            </div>
+
+
+            <div class="evidence-badge">
+
+                <span>
+                    ✦
+                </span>
+
+                Evidence-based
+
+            </div>
+
+        </div>
+
+
+
+        <!-- INPUT -->
+
+        <div class="input-wrapper">
+
+            <textarea
+                id="news"
+                maxlength="10000"
+                placeholder="Paste a claim or news article here..."
+                spellcheck="true"
+            ></textarea>
+
+
+            <div class="input-footer">
+
+                <span id="charCount">
+                    0 / 10,000
+                </span>
+
+
+                <span>
+                    Maximum 10,000 characters
+                </span>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- ACTIONS -->
+
+        <div class="actions">
+
+            <button
+                class="verify-btn"
+                id="verifyBtn"
+                onclick="checkNews()"
+            >
+
+                <span id="verifyText">
+                    Verify with TruthLens
+                </span>
+
+                <span class="arrow">
+                    →
+                </span>
+
+            </button>
+
+
+            <button
+                class="clear-btn"
+                onclick="clearNews()"
+            >
+                Clear
+            </button>
+
+        </div>
+
+
+
+        <!-- EXAMPLES -->
+
+        <div class="examples">
+
+            <span class="examples-title">
+                QUICK CHECKS
+            </span>
+
+
+            <button
+                onclick="useExample('The Earth is flat and NASA has confirmed that the Earth is flat.')"
+            >
+                Earth & NASA
+            </button>
+
+
+            <button
+                onclick="useExample('The Earth will end in 3 days.')"
+            >
+                Future prediction
+            </button>
+
+
+            <button
+                onclick="useExample('Scientists have discovered a new treatment that completely cures every type of cancer.')"
+            >
+                Science claim
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <div class="workspace-note">
+
+        <div class="note-line"></div>
+
+        <span>
+            Don't just ask whether something sounds true.
+            Look at the evidence.
+        </span>
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     LOADING
+===================================================== -->
+
+<section
+    class="loading-card"
+    id="loadingCard"
+>
+
+    <div class="loader"></div>
+
+    <div>
+
+        <strong>
+            Analyzing claim
+        </strong>
+
+        <p>
+            Checking available evidence...
+        </p>
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     RESULT
+===================================================== -->
+
+<section
+    class="result-section"
+    id="resultSection"
+>
+
+    <div
+        class="result-card"
+        id="resultCard"
+    >
+
+        <div class="result-top">
+
+            <div
+                class="result-icon"
+                id="resultIcon"
+            >
+                ?
+            </div>
+
+
+            <div>
+
+                <span
+                    class="result-label"
+                    id="resultLabel"
+                >
+                    VERIFICATION RESULT
+                </span>
+
+
+                <h2 id="result">
+                    —
+                </h2>
+
+            </div>
+
+        </div>
+
+
+        <p
+            class="result-description"
+            id="resultDescription"
+        >
+        </p>
+
+
+
+        <div
+            class="confidence-row"
+            id="confidenceRow"
+        >
+
+            <div>
+
+                <span id="confidenceLabel">
+                    Model confidence
+                </span>
+
+                <strong id="confidence">
+                    —
+                </strong>
+
+            </div>
+
+
+            <div class="confidence-bar">
+
+                <div
+                    id="confidenceFill"
+                    class="confidence-fill"
+                ></div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- EVIDENCE -->
+
+    <div
+        class="evidence-section"
+        id="evidenceSection"
+    >
+
+        <div class="section-heading">
+
+            <div>
+
+                <span class="section-kicker">
+                    VERIFIED SOURCES
+                </span>
+
+                <h2>
+                    What the evidence says
+                </h2>
+
+            </div>
+
+
+            <span
+                class="source-count"
+                id="sourceCount"
+            >
+                0 sources
+            </span>
+
+        </div>
+
+
+        <div
+            id="evidenceContainer"
+            class="evidence-container"
+        ></div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     TRUTHLENS INVESTIGATION MODE
+===================================================== -->
+
+<section
+    class="investigation-section"
+    id="investigationSection"
+>
+
+    <div class="investigation-card">
+
+        <div class="investigation-header">
+
+            <div>
+
+                <span class="section-kicker">
+                    TRUTHLENS INVESTIGATION
+                </span>
+
+                <h2>
+                    How TruthLens reached this result
+                </h2>
+
+                <p>
+                    Follow the evidence and analysis behind
+                    the verification.
+                </p>
+
+            </div>
+
+
+            <div class="investigation-icon">
+                🔎
+            </div>
+
+        </div>
+
+
+        <!-- CLAIM -->
+
+        <div class="investigation-block">
+
+            <span class="investigation-label">
+                CLAIM INVESTIGATED
+            </span>
+
+            <div
+                id="investigationClaim"
+                class="investigation-claim"
+            >
+            </div>
+
+        </div>
+
+
+        <!-- SUMMARY -->
+
+        <div class="investigation-block">
+
+            <span class="investigation-label">
+                INVESTIGATION SUMMARY
+            </span>
+
+            <p
+                id="investigationSummary"
+                class="investigation-text"
+            >
+            </p>
+
+        </div>
+
+
+        <!-- STATUS -->
+
+        <div class="investigation-grid">
+
+            <div class="investigation-stat">
+
+                <span>
+                    VERIFICATION METHOD
+                </span>
+
+                <strong
+                    id="investigationMethod"
+                >
+                    —
+                </strong>
+
+            </div>
+
+
+            <div class="investigation-stat">
+
+                <span>
+                    EVIDENCE STATUS
+                </span>
+
+                <strong
+                    id="investigationEvidence"
+                >
+                    —
+                </strong>
+
+            </div>
+
+
+            <div class="investigation-stat">
+
+                <span>
+                    MODEL ANALYSIS
+                </span>
+
+                <strong
+                    id="investigationModel"
+                >
+                    —
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <!-- EXPLANATION -->
+
+        <div class="investigation-explanation">
+
+            <div class="explanation-icon">
+                ℹ
+            </div>
+
+            <div>
+
+                <strong>
+                    Why this result?
+                </strong>
+
+                <p
+                    id="investigationExplanation"
+                >
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     CLAIM DECOMPOSITION
+===================================================== -->
+
+<section
+    class="claim-decomposition-section"
+    id="claimDecompositionSection"
+>
+
+    <div class="claim-decomposition-card">
+
+        <div class="claim-decomposition-header">
+
+            <div>
+
+                <span class="section-kicker">
+                    CLAIM BREAKDOWN
+                </span>
+
+                <h2>
+                    What exactly is being claimed?
+                </h2>
+
+                <p>
+                    TruthLens separated the statement into
+                    individual claims and analyzed them separately.
+                </p>
+
+            </div>
+
+
+            <div class="claim-decomposition-icon">
+                🧩
+            </div>
+
+        </div>
+
+
+        <div
+            id="claimList"
+            class="claim-list"
+        ></div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     HOW IT WORKS
+===================================================== -->
+
+<section
+    class="how-section"
+    id="how-it-works"
+>
+
+    <div class="section-intro">
+
+        <span class="section-kicker">
+            HOW IT WORKS
+        </span>
+
+        <h2>
+            From claim to evidence.
+        </h2>
+
+        <p>
+            TruthLens separates machine-learning signals
+            from external fact-checking evidence.
+        </p>
+
+    </div>
+
+
+
+    <div class="process-grid">
+
+        <article class="process-card">
+
+            <span class="process-number">
+                01
+            </span>
+
+            <div class="process-icon">
+                ↗
+            </div>
+
+            <h3>
+                Submit
+            </h3>
+
+            <p>
+                Enter a claim, headline, statement,
+                or longer news article.
+            </p>
+
+        </article>
+
+
+
+        <article class="process-card">
+
+            <span class="process-number">
+                02
+            </span>
+
+            <div class="process-icon">
+                ◉
+            </div>
+
+            <h3>
+                Analyze
+            </h3>
+
+            <p>
+                TruthLens analyzes the text and checks
+                for available fact-checking evidence.
+            </p>
+
+        </article>
+
+
+
+        <article class="process-card">
+
+            <span class="process-number">
+                03
+            </span>
+
+            <div class="process-icon">
+                ✓
+            </div>
+
+            <h3>
+                Understand
+            </h3>
+
+            <p>
+                Review the result, confidence,
+                source, claim, and assessment.
+            </p>
+
+        </article>
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     TRUST / DISCLAIMER
+===================================================== -->
+
+<section class="trust-section">
+
+    <div class="trust-box">
+
+        <div class="trust-box-icon">
+            ⓘ
+        </div>
+
+
+        <div>
+
+            <strong>
+                Verification is not the same as certainty.
+            </strong>
+
+            <p>
+                TruthLens combines machine-learning signals
+                with available fact-checking evidence.
+                When reliable evidence is unavailable,
+                the system can return an uncertain result.
+                Always review the cited sources before
+                making important decisions.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+</main>
+
+
+
+<!-- =====================================================
+     FOOTER
+===================================================== -->
+
+<footer class="site-footer">
+
+    <div class="footer-inner">
+
+        <div class="footer-brand">
+
+            <a
+                href="/"
+                class="brand"
+            >
+
+                <div class="brand-mark">
+                    TL
+                </div>
+
+                <div class="brand-name">
+                    Truth<span>Lens</span>
+                </div>
+
+            </a>
+
+
+            <p>
+                Verify before you believe.
+            </p>
+
+
+            <span class="footer-copy">
+                © 2026 TruthLens. Built for evidence-first verification.
+            </span>
+
+        </div>
+
+
+
+        <div class="footer-column">
+
+            <h4>
+                PRODUCT
+            </h4>
+
+            <a href="#verify">
+                Verify
+            </a>
+
+            <a href="/history">
+                History
+            </a>
+
+            <a href="#how-it-works">
+                How it works
+            </a>
+
+        </div>
+
+
+
+        <div class="footer-column">
+
+            <h4>
+                RESOURCES
+            </h4>
+
+            <a href="#how-it-works">
+                Methodology
+            </a>
+
+            <a href="#verify">
+                Examples
+            </a>
+
+            <a href="#verify">
+                Fact checking
+            </a>
+
+        </div>
+
+
+
+        <div class="footer-column">
+
+            <h4>
+                CONNECT
+            </h4>
+
+            <span class="social-link">
+                GitHub
+            </span>
+
+            <span class="social-link">
+                LinkedIn
+            </span>
+
+            <span class="social-link">
+                Contact
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <div class="footer-bottom">
+
+        <span>
+            TruthLens
+        </span>
+
+        <span>
+            AI-assisted verification • Evidence matters
+        </span>
+
+    </div>
+
+</footer>
+
+
+
+<!-- =====================================================
+     JAVASCRIPT
+===================================================== -->
+
+<script>
+
+
+/* =====================================================
+   DOM ELEMENTS
+===================================================== */
+
+const newsInput =
+    document.getElementById("news");
+
+const charCount =
+    document.getElementById("charCount");
+
+const loadingCard =
+    document.getElementById("loadingCard");
+
+const resultSection =
+    document.getElementById("resultSection");
+
+const resultCard =
+    document.getElementById("resultCard");
+
+const result =
+    document.getElementById("result");
+
+const resultLabel =
+    document.getElementById("resultLabel");
+
+const resultDescription =
+    document.getElementById("resultDescription");
+
+const confidence =
+    document.getElementById("confidence");
+
+const confidenceLabel =
+    document.getElementById("confidenceLabel");
+
+const confidenceFill =
+    document.getElementById("confidenceFill");
+
+const resultIcon =
+    document.getElementById("resultIcon");
+
+const evidenceSection =
+    document.getElementById("evidenceSection");
+
+const evidenceContainer =
+    document.getElementById("evidenceContainer");
+
+const sourceCount =
+    document.getElementById("sourceCount");
+
+const verifyBtn =
+    document.getElementById("verifyBtn");
+
+const verifyText =
+    document.getElementById("verifyText");
+
+
+/* =====================================================
+   INVESTIGATION ELEMENTS
+===================================================== */
+
+const investigationSection =
+    document.getElementById(
+        "investigationSection"
+    );
+
+const investigationClaim =
+    document.getElementById(
+        "investigationClaim"
+    );
+
+const investigationSummary =
+    document.getElementById(
+        "investigationSummary"
+    );
+
+const investigationMethod =
+    document.getElementById(
+        "investigationMethod"
+    );
+
+const investigationEvidence =
+    document.getElementById(
+        "investigationEvidence"
+    );
+
+const investigationModel =
+    document.getElementById(
+        "investigationModel"
+    );
+
+const investigationExplanation =
+    document.getElementById(
+        "investigationExplanation"
+    );
+
+
+/* =====================================================
+   CLAIM DECOMPOSITION ELEMENTS
+===================================================== */
+
+const claimDecompositionSection =
+    document.getElementById(
+        "claimDecompositionSection"
+    );
+
+const claimList =
+    document.getElementById(
+        "claimList"
+    );
+
+
+/* =====================================================
+   AUTH NAVBAR
+===================================================== */
+
+const authNav =
+    document.getElementById("authNav");
+
+
+function updateAuthNavbar() {
+
+    const token =
+        localStorage.getItem(
+            "truthlens_token"
+        );
+
+    const userData =
+        localStorage.getItem(
+            "truthlens_user"
+        );
+
+
+    /* ================================================
+       LOGGED IN
+    ================================================ */
+
+    if (token && userData) {
+
+        let user = null;
+
+        try {
+
+            user =
+                JSON.parse(
+                    userData
+                );
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "Invalid user data:",
+                error
+            );
+
+        }
+
+
+        const userName =
+            user &&
+            user.name
+                ? user.name
+                : "User";
+
+
+        authNav.innerHTML = `
+
+            <span
+                style="
+                    color: #aaa;
+                    font-size: 14px;
+                    font-weight: 500;
+                "
+            >
+                Hi, ${escapeHtml(userName)}
+            </span>
+
+
+            <button
+                type="button"
+                class="nav-cta"
+                onclick="logoutUser()"
+                style="
+                    border: none;
+                    cursor: pointer;
+                    font-family: inherit;
+                "
+            >
+                Logout
+            </button>
+
+        `;
+
+    }
+
+
+    /* ================================================
+       LOGGED OUT
+    ================================================ */
+
+    else {
+
+        authNav.innerHTML = `
+
+            <a
+                href="/login"
+                class="nav-cta"
+            >
+                Login
+            </a>
+
+            <a
+                href="/register"
+                class="nav-cta"
+            >
+                Register
+            </a>
+
+        `;
+
+    }
+
+}
+
+
+/* =====================================================
+   LOGOUT
+===================================================== */
+
+function logoutUser() {
+
+    localStorage.removeItem(
+        "truthlens_token"
+    );
+
+    localStorage.removeItem(
+        "truthlens_user"
+    );
+
+    window.location.href =
+        "/login";
+
+}
+
+
+/* =====================================================
+   INITIALIZE AUTH NAVBAR
+===================================================== */
+
+updateAuthNavbar();
+
+
+
+/* =====================================================
+   CHARACTER COUNT
+===================================================== */
+
+newsInput.addEventListener(
+    "input",
+    function () {
+
+        charCount.textContent =
+            `${this.value.length.toLocaleString()} / 10,000`;
+
+    }
+);
+
+
+
+/* =====================================================
+   EXAMPLES
+===================================================== */
+
+function useExample(text) {
+
+    newsInput.value =
+        text;
+
+    newsInput.dispatchEvent(
+        new Event("input")
+    );
+
+    newsInput.focus();
+
+}
+
+
+
+/* =====================================================
+   CHECK NEWS
+===================================================== */
+
+async function checkNews() {
+
+    const news =
+        newsInput.value.trim();
+
+
+    if (!news) {
+
+        showMessage(
+            "Enter a claim first.",
+            "Please paste a news article or statement to verify."
+        );
+
+        newsInput.focus();
+
+        return;
+
+    }
+
+
+    resultSection.style.display =
+        "none";
+
+    evidenceSection.style.display =
+        "none";
+
+    investigationSection.style.display =
+        "none";
+
+    claimDecompositionSection.style.display =
+        "none";
+
+
+    loadingCard.classList.add(
+        "show"
+    );
+
+
+    verifyBtn.disabled =
+        true;
+
+    verifyText.textContent =
+        "Analyzing...";
+
+
+    try {
+
+
+        /* =================================================
+           JWT AUTHENTICATION
+        ================================================= */
+
+        const token =
+            localStorage.getItem(
+                "truthlens_token"
+            );
+
+
+        if (!token) {
+
+            loadingCard.classList.remove(
+                "show"
+            );
+
+            verifyBtn.disabled =
+                false;
+
+            verifyText.textContent =
+                "Verify with TruthLens";
+
+            window.location.href =
+                "/login";
+
+            return;
+
+        }
+
+
+        /* =================================================
+           SEND VERIFIED REQUEST
+        ================================================= */
+
+        const response =
+            await fetch(
+                "/predict",
+                {
+
+                    method: "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json",
+
+                        "Authorization":
+                            `Bearer ${token}`
+
+                    },
+
+                    body: JSON.stringify({
+                        news: news
+                    })
+
+                }
+            );
+
+
+        /* =================================================
+           JWT INVALID / EXPIRED
+        ================================================= */
+
+        if (
+            response.status === 401
+        ) {
+
+            localStorage.removeItem(
+                "truthlens_token"
+            );
+
+            localStorage.removeItem(
+                "truthlens_user"
+            );
+
+
+            loadingCard.classList.remove(
+                "show"
+            );
+
+            verifyBtn.disabled =
+                false;
+
+            verifyText.textContent =
+                "Verify with TruthLens";
+
+
+            window.location.href =
+                "/login";
+
+
+            return;
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        loadingCard.classList.remove(
+            "show"
+        );
+
+        verifyBtn.disabled =
+            false;
+
+        verifyText.textContent =
+            "Verify with TruthLens";
+
+
+        if (data.error) {
+
+            showMessage(
+                "Unable to verify",
+                data.error
+            );
+
+            return;
+
+        }
+
+
+        displayResult(
+            data
+        );
+
+
+    }
+
+    catch (error) {
+
+        loadingCard.classList.remove(
+            "show"
+        );
+
+        verifyBtn.disabled =
+            false;
+
+        verifyText.textContent =
+            "Verify with TruthLens";
+
+
+        showMessage(
+            "Connection error",
+            "Unable to connect to the TruthLens server."
+        );
+
+
+        console.error(
+            error
+        );
+
+    }
+
+}
+
+
+
+/* =====================================================
+   DISPLAY RESULT
+===================================================== */
+
+function displayResult(data) {
+
+    resultSection.style.display =
+        "block";
+
+
+    const prediction =
+        String(
+            data.prediction ||
+            "UNCERTAIN"
+        ).toUpperCase();
+
+
+    const confidenceValue =
+        data.confidence !== null &&
+        data.confidence !== undefined &&
+        !isNaN(
+            Number(data.confidence)
+        )
+            ? Number(data.confidence)
+            : null;
+
+
+    resultCard.className =
+        "result-card";
+
+
+    confidenceFill.style.width =
+        "0%";
+
+
+    /* =================================================
+       FACT CHECK FOUND
+    ================================================= */
+
+    if (
+        prediction ===
+            "FACT_CHECK_FOUND" ||
+        prediction ===
+            "FACT CHECK FOUND"
+    ) {
+
+        resultCard.classList.add(
+            "fact-check"
+        );
+
+
+        resultIcon.textContent =
+            "✓";
+
+
+        resultLabel.textContent =
+            "FACT CHECK FOUND";
+
+
+        result.textContent =
+            "Evidence found";
+
+
+        resultDescription.textContent =
+            "A relevant fact-check was found for this claim. Review the cited sources and their assessments below.";
+
+
+        confidenceLabel.textContent =
+            "Verification method";
+
+
+        confidence.textContent =
+            "External evidence";
+
+
+        confidenceFill.style.width =
+            "0%";
+
+    }
+
+
+    /* =================================================
+       UNCERTAIN
+    ================================================= */
+
+    else if (
+        prediction ===
+        "UNCERTAIN"
+    ) {
+
+        resultCard.classList.add(
+            "uncertain"
+        );
+
+
+        resultIcon.textContent =
+            "?";
+
+
+        resultLabel.textContent =
+            "NEEDS MORE EVIDENCE";
+
+
+        result.textContent =
+            "Uncertain";
+
+
+        resultDescription.textContent =
+            data.reason ||
+            data.message ||
+            "No reliable matching evidence was found, so TruthLens cannot make a dependable assessment.";
+
+
+        confidenceLabel.textContent =
+            "Verification status";
+
+
+        confidence.textContent =
+            "Not available";
+
+
+        confidenceFill.style.width =
+            "0%";
+
+    }
+
+
+    /* =================================================
+       LIKELY REAL
+    ================================================= */
+
+    else if (
+        prediction === "REAL" ||
+        prediction === "LIKELY_REAL" ||
+        prediction === "LIKELY REAL"
+    ) {
+
+        resultCard.classList.add(
+            "real"
+        );
+
+
+        resultIcon.textContent =
+            "✓";
+
+
+        resultLabel.textContent =
+            "MODEL ASSESSMENT";
+
+
+        result.textContent =
+            "Likely Real";
+
+
+        resultDescription.textContent =
+            data.reason ||
+            "The machine-learning model found patterns associated with real news. This is not independent proof of the claim.";
+
+
+        confidenceLabel.textContent =
+            "Model confidence";
+
+
+        confidence.textContent =
+            confidenceValue !== null
+                ? `${confidenceValue}%`
+                : "Not available";
+
+
+        confidenceFill.style.width =
+            confidenceValue !== null
+                ? `${Math.min(
+                    confidenceValue,
+                    100
+                )}%`
+                : "0%";
+
+    }
+
+
+    /* =================================================
+       LIKELY FAKE
+    ================================================= */
+
+    else if (
+        prediction === "FAKE" ||
+        prediction === "LIKELY_FAKE" ||
+        prediction === "LIKELY FAKE"
+    ) {
+
+        resultCard.classList.add(
+            "fake"
+        );
+
+
+        resultIcon.textContent =
+            "!";
+
+
+        resultLabel.textContent =
+            "MODEL ASSESSMENT";
+
+
+        result.textContent =
+            "Likely Fake";
+
+
+        resultDescription.textContent =
+            data.reason ||
+            "The machine-learning model found patterns associated with fake news. Review available evidence before drawing a conclusion.";
+
+
+        confidenceLabel.textContent =
+            "Model confidence";
+
+
+        confidence.textContent =
+            confidenceValue !== null
+                ? `${confidenceValue}%`
+                : "Not available";
+
+
+        confidenceFill.style.width =
+            confidenceValue !== null
+                ? `${Math.min(
+                    confidenceValue,
+                    100
+                )}%`
+                : "0%";
+
+    }
+
+
+    /* =================================================
+       FALLBACK
+    ================================================= */
+
+    else {
+
+        resultCard.classList.add(
+            "uncertain"
+        );
+
+
+        resultIcon.textContent =
+            "?";
+
+
+        resultLabel.textContent =
+            "VERIFICATION RESULT";
+
+
+        result.textContent =
+            "Unable to determine";
+
+
+        resultDescription.textContent =
+            data.reason ||
+            data.message ||
+            "The available information is not sufficient for a reliable assessment.";
+
+
+        confidenceLabel.textContent =
+            "Verification status";
+
+
+        confidence.textContent =
+            "Not available";
+
+
+        confidenceFill.style.width =
+            "0%";
+
+    }
+
+
+
+    /* =================================================
+       EVIDENCE
+    ================================================= */
+
+    const evidence =
+        data.fact_checks ||
+        data.factCheck ||
+        data.evidence ||
+        data.results ||
+        [];
+
+
+    if (
+        Array.isArray(evidence) &&
+        evidence.length > 0
+    ) {
+
+        displayEvidence(
+            evidence
+        );
+
+    }
+
+    else {
+
+        evidenceSection.style.display =
+            "none";
+
+        evidenceContainer.innerHTML =
+            "";
+
+    }
+
+
+
+    /* =================================================
+       INVESTIGATION MODE
+    ================================================= */
+
+    displayInvestigation(
+        data
+    );
+
+
+    /* =================================================
+       CLAIM DECOMPOSITION
+    ================================================= */
+
+    displayClaimDecomposition(
+        data
+    );
+
+
+    resultSection.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+    });
+
+}
+
+
+
+/* =====================================================
+   INVESTIGATION MODE
+===================================================== */
+
+function displayInvestigation(data) {
+
+    const investigation =
+        data.investigation;
+
+
+    if (!investigation) {
+
+        investigationSection.style.display =
+            "none";
+
+        return;
+
+    }
+
+
+    investigationSection.style.display =
+        "block";
+
+
+    investigationClaim.textContent =
+        investigation.claim ||
+        "Claim not available";
+
+
+    investigationSummary.textContent =
+        investigation.summary ||
+        "No investigation summary available.";
+
+
+    investigationMethod.textContent =
+        investigation.verification_method ||
+        "Not available";
+
+
+    investigationEvidence.textContent =
+        investigation.evidence_status ||
+        "Not available";
+
+
+    if (
+        investigation.model_used
+    ) {
+
+        const modelAssessment =
+            investigation.model_assessment ||
+            "Not available";
+
+
+        const modelConfidence =
+            investigation.model_confidence !==
+                undefined &&
+            investigation.model_confidence !==
+                null
+                ? ` (${investigation.model_confidence}%)`
+                : "";
+
+
+        investigationModel.textContent =
+            `${modelAssessment}${modelConfidence}`;
+
+    }
+
+    else {
+
+        investigationModel.textContent =
+            investigation.model_assessment ||
+            "Not performed";
+
+    }
+
+
+    investigationExplanation.textContent =
+        investigation.explanation ||
+        "No additional explanation is available.";
+
+}
+
+
+
+/* =====================================================
+   CLAIM DECOMPOSITION
+===================================================== */
+
+function displayClaimDecomposition(data) {
+
+    const decomposition =
+        data.claim_decomposition;
+
+
+    if (
+        !Array.isArray(decomposition) ||
+        decomposition.length <= 1
+    ) {
+
+        claimDecompositionSection.style.display =
+            "none";
+
+        claimList.innerHTML =
+            "";
+
+        return;
+
+    }
+
+
+    claimDecompositionSection.style.display =
+        "block";
+
+
+    claimList.innerHTML =
+        "";
+
+
+    decomposition.forEach(
+        function(item) {
+
+            const card =
+                document.createElement(
+                    "div"
+                );
+
+
+            card.className =
+                "claim-item";
+
+
+            const claimNumber =
+                item.claim_number ||
+                "";
+
+
+            const claimText =
+                escapeHtml(
+                    item.claim ||
+                    "Claim unavailable"
+                );
+
+
+            const status =
+                String(
+                    item.status ||
+                    "UNCERTAIN"
+                ).toUpperCase();
+
+
+            const statusText =
+                formatPrediction(
+                    status
+                );
+
+
+            let confidenceText =
+                "Not available";
+
+
+            if (
+                item.confidence !== null &&
+                item.confidence !== undefined
+            ) {
+
+                confidenceText =
+                    `${item.confidence}%`;
+
+            }
+
+
+            const evidence =
+                Array.isArray(
+                    item.fact_checks
+                )
+                    ? item.fact_checks
+                    : [];
+
+
+            const evidenceCount =
+                evidence.length;
+
+
+            let evidenceText =
+                "No matching fact-check found";
+
+
+            if (
+                evidenceCount === 1
+            ) {
+
+                evidenceText =
+                    "1 relevant fact-check found";
+
+            }
+
+            else if (
+                evidenceCount > 1
+            ) {
+
+                evidenceText =
+                    `${evidenceCount} relevant fact-checks found`;
+
+            }
+
+
+            card.innerHTML = `
+
+                <div class="claim-item-top">
+
+                    <span class="claim-number">
+                        CLAIM ${claimNumber}
+                    </span>
+
+
+                    <span class="claim-status">
+
+                        ${escapeHtml(
+                            statusText
+                        )}
+
+                    </span>
+
+                </div>
+
+
+                <p class="claim-text">
+
+                    ${claimText}
+
+                </p>
+
+
+                <div class="claim-details">
+
+                    <span class="claim-detail">
+
+                        Confidence:
+
+                        <strong>
+
+                            ${escapeHtml(
+                                confidenceText
+                            )}
+
+                        </strong>
+
+                    </span>
+
+
+                    <span class="claim-detail">
+
+                        Evidence:
+
+                        <strong>
+
+                            ${escapeHtml(
+                                evidenceText
+                            )}
+
+                        </strong>
+
+                    </span>
+
+                </div>
+
+
+                <div class="claim-evidence">
+
+                    <strong>
+                        Assessment:
+                    </strong>
+
+                    ${escapeHtml(
+                        item.reason ||
+                        "No additional assessment available."
+                    )}
+
+                </div>
+
+            `;
+
+
+            claimList.appendChild(
+                card
+            );
+
+        }
+    );
+
+}
+
+
+
+/* =====================================================
+   DISPLAY EVIDENCE
+===================================================== */
+
+function displayEvidence(items) {
+
+    evidenceContainer.innerHTML =
+        "";
+
+
+    evidenceSection.style.display =
+        "block";
+
+
+    sourceCount.textContent =
+        `${items.length} ${
+            items.length === 1
+                ? "source"
+                : "sources"
+        }`;
+
+
+    items
+        .slice(0, 5)
+        .forEach(
+            function(item) {
+
+                const card =
+                    document.createElement(
+                        "article"
+                    );
+
+
+                card.className =
+                    "evidence-card";
+
+
+                const claim =
+                    escapeHtml(
+                        item.claim ||
+                        "Claim reviewed"
+                    );
+
+
+                const rating =
+                    escapeHtml(
+                        item.rating ||
+                        "Assessment unavailable"
+                    );
+
+
+                const publisher =
+                    escapeHtml(
+                        item.publisher ||
+                        "Unknown publisher"
+                    );
+
+
+                const title =
+                    escapeHtml(
+                        item.title ||
+                        "Fact-check source"
+                    );
+
+
+                const rawUrl =
+                    item.url ||
+                    "";
+
+
+                const url =
+                    isSafeUrl(
+                        rawUrl
+                    )
+                        ? rawUrl
+                        : "";
+
+
+                card.innerHTML = `
+
+                    <div class="evidence-meta">
+
+                        <span class="source-badge">
+                            FACT CHECK
+                        </span>
+
+                        <span>
+                            ${publisher}
+                        </span>
+
+                    </div>
+
+
+                    <h3>
+                        ${title}
+                    </h3>
+
+
+                    <div class="claim-block">
+
+                        <span>
+                            CLAIM
+                        </span>
+
+                        <p>
+                            ${claim}
+                        </p>
+
+                    </div>
+
+
+                    <div class="assessment">
+
+                        <span>
+                            ASSESSMENT
+                        </span>
+
+                        <p>
+                            ${rating}
+                        </p>
+
+                    </div>
+
+
+                    ${
+                        url
+                        ?
+                        `
+                        <a
+                            class="source-link"
+                            href="${escapeAttribute(
+                                url
+                            )}"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+
+                            Read full fact-check
+
+                            <span>
+                                →
+                            </span>
+
+                        </a>
+                        `
+                        :
+                        ""
+                    }
+
+                `;
+
+
+                evidenceContainer.appendChild(
+                    card
+                );
+
+            }
+        );
+
+}
+
+
+
+/* =====================================================
+   MESSAGE
+===================================================== */
+
+function showMessage(
+    title,
+    message
+) {
+
+    resultSection.style.display =
+        "block";
+
+
+    evidenceSection.style.display =
+        "none";
+
+
+    investigationSection.style.display =
+        "none";
+
+
+    claimDecompositionSection.style.display =
+        "none";
+
+
+    resultCard.className =
+        "result-card uncertain";
+
+
+    resultIcon.textContent =
+        "!";
+
+
+    resultLabel.textContent =
+        "ATTENTION";
+
+
+    result.textContent =
+        title;
+
+
+    resultDescription.textContent =
+        message;
+
+
+    confidenceLabel.textContent =
+        "Verification status";
+
+
+    confidence.textContent =
+        "Not available";
+
+
+    confidenceFill.style.width =
+        "0%";
+
+}
+
+
+
+/* =====================================================
+   CLEAR
+===================================================== */
+
+function clearNews() {
+
+    newsInput.value =
+        "";
+
+
+    charCount.textContent =
+        "0 / 10,000";
+
+
+    resultSection.style.display =
+        "none";
+
+
+    evidenceSection.style.display =
+        "none";
+
+
+    investigationSection.style.display =
+        "none";
+
+
+    claimDecompositionSection.style.display =
+        "none";
+
+
+    loadingCard.classList.remove(
+        "show"
+    );
+
+
+    verifyBtn.disabled =
+        false;
+
+
+    verifyText.textContent =
+        "Verify with TruthLens";
+
+
+    newsInput.focus();
+
+}
+
+
+
+/* =====================================================
+   FORMAT PREDICTION
+===================================================== */
+
+function formatPrediction(value) {
+
+    return value
+        .replaceAll(
+            "_",
+            " "
+        )
+        .toLowerCase()
+        .replace(
+            /\b\w/g,
+            letter =>
+                letter.toUpperCase()
+        );
+
+}
+
+
+
+/* =====================================================
+   ESCAPE HTML
+===================================================== */
+
+function escapeHtml(text) {
+
+    const div =
+        document.createElement(
+            "div"
+        );
+
+
+    div.textContent =
+        text;
+
+
+    return div.innerHTML;
+
+}
+
+
+
+/* =====================================================
+   ESCAPE ATTRIBUTE
+===================================================== */
+
+function escapeAttribute(value) {
+
+    return String(value)
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        );
+
+}
+
+
+
+/* =====================================================
+   SAFE URL
+===================================================== */
+
+function isSafeUrl(url) {
+
+    try {
+
+        const parsed =
+            new URL(
+                url,
+                window.location.origin
+            );
+
+
+        return (
+            parsed.protocol ===
+                "http:" ||
+            parsed.protocol ===
+                "https:"
+        );
+
+    }
+
+    catch (error) {
+
+        return false;
+
+    }
+
+}
+
+
+</script>
+
+
+</body>
+
+</html>

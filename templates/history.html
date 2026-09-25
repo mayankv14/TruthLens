@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="TruthLens verification history"
+    >
+
+    <title>TruthLens | Verification History</title>
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     NAVBAR
+===================================================== -->
+
+<header class="navbar">
+
+    <div class="nav-inner">
+
+
+        <a href="/" class="brand">
+
+            <div class="brand-mark">
+                TL
+            </div>
+
+            <div class="brand-name">
+                Truth<span>Lens</span>
+            </div>
+
+        </a>
+
+
+        <nav class="nav-links">
+
+            <a href="/">
+                Verify
+            </a>
+
+            <a
+                href="/history"
+                class="active"
+            >
+                History
+            </a>
+
+        </nav>
+
+
+        <div class="nav-right">
+
+            <div class="status">
+
+                <span class="status-dot"></span>
+
+                System online
+
+            </div>
+
+
+            <div
+                id="authNav"
+                style="
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                "
+            >
+
+                <!-- JavaScript will fill this -->
+
+            </div>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+
+<!-- =====================================================
+     HISTORY
+===================================================== -->
+
+<main class="history-page">
+
+
+    <section class="history-hero">
+
+
+        <div class="eyebrow">
+
+            <span class="eyebrow-dot"></span>
+
+            VERIFICATION ACTIVITY
+
+        </div>
+
+
+        <h1>
+
+            Your verification
+
+            <span>history.</span>
+
+        </h1>
+
+
+        <p>
+
+            Review the claims and articles previously
+            analyzed by TruthLens.
+
+        </p>
+
+
+    </section>
+
+
+
+    <!-- SUMMARY -->
+
+    <section class="history-summary">
+
+
+        <div class="summary-card">
+
+            <span>
+                TOTAL CHECKS
+            </span>
+
+            <strong id="totalChecks">
+                —
+            </strong>
+
+        </div>
+
+
+        <div class="summary-card">
+
+            <span>
+                LAST CHECK
+            </span>
+
+            <strong id="lastCheck">
+                —
+            </strong>
+
+        </div>
+
+
+        <a
+            href="/"
+            class="summary-action"
+        >
+
+            <span>
+                +
+            </span>
+
+            New verification
+
+        </a>
+
+
+    </section>
+
+
+
+    <!-- HISTORY HEADER -->
+
+    <section class="history-content">
+
+
+        <div class="history-heading">
+
+            <div>
+
+                <span class="section-kicker">
+                    ACTIVITY
+                </span>
+
+                <h2>
+                    Recent verifications
+                </h2>
+
+            </div>
+
+
+            <span
+                class="history-count"
+                id="historyCount"
+            >
+                0 checks
+            </span>
+
+        </div>
+
+
+
+        <div
+            id="history"
+            class="history-list"
+        >
+
+            <div class="history-loading">
+
+                <div class="loader"></div>
+
+                Loading history...
+
+            </div>
+
+        </div>
+
+
+    </section>
+
+
+</main>
+
+
+
+<!-- =====================================================
+     FOOTER
+===================================================== -->
+
+<footer class="site-footer">
+
+
+    <div class="footer-inner">
+
+
+        <div class="footer-brand">
+
+            <a href="/" class="brand">
+
+                <div class="brand-mark">
+                    TL
+                </div>
+
+                <div class="brand-name">
+                    Truth<span>Lens</span>
+                </div>
+
+            </a>
+
+
+            <p>
+                Verify before you believe.
+            </p>
+
+
+            <span class="footer-copy">
+                © 2026 TruthLens
+            </span>
+
+        </div>
+
+
+
+        <div class="footer-column">
+
+            <h4>
+                PRODUCT
+            </h4>
+
+            <a href="/">
+                Verify
+            </a>
+
+            <a href="/history">
+                History
+            </a>
+
+        </div>
+
+
+
+        <div class="footer-column">
+
+            <h4>
+                RESOURCES
+            </h4>
+
+            <a href="/">
+                How it works
+            </a>
+
+            <a href="/">
+                Fact checking
+            </a>
+
+        </div>
+
+
+
+        <div class="footer-column">
+
+            <h4>
+                CONNECT
+            </h4>
+
+            <span class="social-link">
+                GitHub
+            </span>
+
+            <span class="social-link">
+                LinkedIn
+            </span>
+
+        </div>
+
+
+    </div>
+
+
+    <div class="footer-bottom">
+
+        <span>
+            TruthLens
+        </span>
+
+        <span>
+            Evidence matters.
+        </span>
+
+    </div>
+
+
+</footer>
+
+
+
+<script>
+
+
+/* =====================================================
+   AUTH NAVBAR
+===================================================== */
+
+const authNav =
+    document.getElementById(
+        "authNav"
+    );
+
+
+function updateAuthNavbar() {
+
+    const token =
+        localStorage.getItem(
+            "truthlens_token"
+        );
+
+    const userData =
+        localStorage.getItem(
+            "truthlens_user"
+        );
+
+
+    /* ================================================
+       LOGGED IN
+    ================================================ */
+
+    if (
+        token &&
+        userData
+    ) {
+
+        let user = null;
+
+        try {
+
+            user =
+                JSON.parse(
+                    userData
+                );
+
+        }
+        catch (error) {
+
+            console.error(
+                "Invalid user data:",
+                error
+            );
+
+        }
+
+
+        const userName =
+            user &&
+            user.name
+                ? user.name
+                : "User";
+
+
+        authNav.innerHTML = `
+
+            <span
+                style="
+                    color: #aaa;
+                    font-size: 14px;
+                    font-weight: 500;
+                "
+            >
+                Hi, ${escapeHtml(userName)}
+            </span>
+
+
+            <button
+                type="button"
+                class="nav-cta"
+                onclick="logoutUser()"
+                style="
+                    border: none;
+                    cursor: pointer;
+                    font-family: inherit;
+                "
+            >
+                Logout
+            </button>
+
+        `;
+
+    }
+
+
+    /* ================================================
+       LOGGED OUT
+    ================================================ */
+
+    else {
+
+        authNav.innerHTML = `
+
+            <a
+                href="/login"
+                class="nav-cta"
+            >
+                Login
+            </a>
+
+            <a
+                href="/register"
+                class="nav-cta"
+            >
+                Register
+            </a>
+
+        `;
+
+    }
+
+}
+
+
+
+/* =====================================================
+   LOGOUT
+===================================================== */
+
+function logoutUser() {
+
+    localStorage.removeItem(
+        "truthlens_token"
+    );
+
+    localStorage.removeItem(
+        "truthlens_user"
+    );
+
+
+    window.location.href =
+        "/login";
+
+}
+
+
+
+/* =====================================================
+   LOAD HISTORY
+===================================================== */
+
+async function loadHistory() {
+
+
+    const history =
+        document.getElementById(
+            "history"
+        );
+
+
+    const token =
+        localStorage.getItem(
+            "truthlens_token"
+        );
+
+
+    /* =================================================
+       USER NOT LOGGED IN
+    ================================================= */
+
+    if (!token) {
+
+        window.location.href =
+            "/login";
+
+        return;
+
+    }
+
+
+    try {
+
+
+        /* =================================================
+           AUTHENTICATED HISTORY REQUEST
+        ================================================= */
+
+        const response =
+            await fetch(
+                "/api/history",
+                {
+
+                    method: "GET",
+
+                    headers: {
+
+                        "Authorization":
+                            `Bearer ${token}`
+
+                    }
+
+                }
+            );
+
+
+        /* =================================================
+           TOKEN EXPIRED / INVALID
+        ================================================= */
+
+        if (
+            response.status === 401
+        ) {
+
+            localStorage.removeItem(
+                "truthlens_token"
+            );
+
+            localStorage.removeItem(
+                "truthlens_user"
+            );
+
+
+            window.location.href =
+                "/login";
+
+            return;
+
+        }
+
+
+        const records =
+            await response.json();
+
+
+        if (
+            !response.ok
+        ) {
+
+            throw new Error(
+                records.error ||
+                "Unable to load history."
+            );
+
+        }
+
+
+        history.innerHTML =
+            "";
+
+
+        document.getElementById(
+            "totalChecks"
+        ).textContent =
+            records.length;
+
+
+        document.getElementById(
+            "historyCount"
+        ).textContent =
+            `${records.length} ${
+                records.length === 1
+                    ? "check"
+                    : "checks"
+            }`;
+
+
+        /* =================================================
+           NO HISTORY
+        ================================================= */
+
+        if (
+            records.length === 0
+        ) {
+
+            history.innerHTML = `
+
+                <div class="empty-history">
+
+                    <div class="empty-icon">
+                        ◌
+                    </div>
+
+                    <h3>
+                        No verifications yet
+                    </h3>
+
+                    <p>
+                        Your verification activity
+                        will appear here.
+                    </p>
+
+                    <a href="/">
+                        Verify your first claim →
+                    </a>
+
+                </div>
+
+            `;
+
+
+            document.getElementById(
+                "lastCheck"
+            ).textContent =
+                "No activity";
+
+
+            return;
+
+        }
+
+
+        /* =================================================
+           LAST CHECK
+        ================================================= */
+
+        const latestRecord =
+            records[0];
+
+
+        if (
+            latestRecord &&
+            latestRecord.created_at
+        ) {
+
+            document.getElementById(
+                "lastCheck"
+            ).textContent =
+                formatDate(
+                    latestRecord.created_at
+                );
+
+        }
+        else {
+
+            document.getElementById(
+                "lastCheck"
+            ).textContent =
+                "Recently";
+
+        }
+
+
+
+        /* =================================================
+           CREATE HISTORY CARDS
+        ================================================= */
+
+        records.forEach(
+            (record, index) => {
+
+
+                const card =
+                    document.createElement(
+                        "article"
+                    );
+
+
+                card.className =
+                    "history-item";
+
+
+                const prediction =
+                    String(
+                        record.prediction ||
+                        "UNKNOWN"
+                    ).toUpperCase();
+
+
+                let statusClass =
+                    "history-uncertain";
+
+
+                let statusIcon =
+                    "?";
+
+
+                /* ==========================================
+                   FACT CHECK
+                ========================================== */
+
+                if (
+                    prediction.includes(
+                        "FACT"
+                    )
+                ) {
+
+                    statusClass =
+                        "history-real";
+
+                    statusIcon =
+                        "✓";
+
+                }
+
+
+                /* ==========================================
+                   REAL
+                ========================================== */
+
+                else if (
+                    prediction.includes(
+                        "REAL"
+                    )
+                ) {
+
+                    statusClass =
+                        "history-real";
+
+                    statusIcon =
+                        "✓";
+
+                }
+
+
+                /* ==========================================
+                   FAKE
+                ========================================== */
+
+                else if (
+                    prediction.includes(
+                        "FAKE"
+                    )
+                ) {
+
+                    statusClass =
+                        "history-fake";
+
+                    statusIcon =
+                        "!";
+
+                }
+
+
+                /* ==========================================
+                   UNCERTAIN
+                ========================================== */
+
+                else if (
+                    prediction.includes(
+                        "UNCERTAIN"
+                    )
+                ) {
+
+                    statusClass =
+                        "history-uncertain";
+
+                    statusIcon =
+                        "?";
+
+                }
+
+
+                const text =
+                    escapeHtml(
+                        record.news_text ||
+                        "No text available"
+                    );
+
+
+                /* =================================================
+                   CONFIDENCE / VERIFICATION METHOD
+                ================================================= */
+
+                let confidenceText =
+                    "Not available";
+
+
+                if (
+                    prediction.includes(
+                        "FACT_CHECK"
+                    ) ||
+                    prediction.includes(
+                        "FACT CHECK"
+                    )
+                ) {
+
+                    confidenceText =
+                        "External evidence";
+
+                }
+                else if (
+                    prediction.includes(
+                        "UNCERTAIN"
+                    )
+                ) {
+
+                    confidenceText =
+                        "Not available";
+
+                }
+                else if (
+                    record.confidence !== null &&
+                    record.confidence !== undefined
+                ) {
+
+                    confidenceText =
+                        `${record.confidence}%`;
+
+                }
+
+
+
+                /* =================================================
+                   CREATE CARD
+                ================================================= */
+
+                card.innerHTML = `
+
+                    <div
+                        class="history-status ${statusClass}"
+                    >
+
+                        ${statusIcon}
+
+                    </div>
+
+
+                    <div class="history-main">
+
+
+                        <div class="history-meta">
+
+                            <span>
+
+                                VERIFICATION #${
+                                    records.length -
+                                    index
+                                }
+
+                            </span>
+
+
+                            <span>
+
+                                ${confidenceText}
+
+                            </span>
+
+                        </div>
+
+
+                        <p
+                            class="history-text"
+                        >
+                            ${text}
+                        </p>
+
+
+                        <div
+                            class="history-bottom"
+                        >
+
+                            <span
+                                class="
+                                    history-prediction
+                                    ${statusClass}
+                                "
+                            >
+
+                                ${formatPrediction(
+                                    prediction
+                                )}
+
+                            </span>
+
+
+                            <span
+                                class="history-action"
+                            >
+
+                                Verified
+
+                            </span>
+
+                        </div>
+
+
+                    </div>
+
+                `;
+
+
+                history.appendChild(
+                    card
+                );
+
+
+            }
+        );
+
+
+    }
+    catch (error) {
+
+
+        history.innerHTML = `
+
+            <div class="empty-history">
+
+                <div class="empty-icon">
+                    !
+                </div>
+
+
+                <h3>
+                    Couldn't load history
+                </h3>
+
+
+                <p>
+                    ${escapeHtml(
+                        error.message ||
+                        "Unable to load verification history."
+                    )}
+                </p>
+
+
+                <button
+                    onclick="loadHistory()"
+                >
+                    Try again
+                </button>
+
+            </div>
+
+        `;
+
+
+        console.error(
+            error
+        );
+
+    }
+
+}
+
+
+
+/* =====================================================
+   FORMAT PREDICTION
+===================================================== */
+
+function formatPrediction(
+    value
+) {
+
+    return value
+        .replaceAll(
+            "_",
+            " "
+        )
+        .toLowerCase()
+        .replace(
+            /\b\w/g,
+            letter =>
+                letter.toUpperCase()
+        );
+
+}
+
+
+
+/* =====================================================
+   FORMAT DATE
+===================================================== */
+
+function formatDate(
+    dateValue
+) {
+
+    try {
+
+        const date =
+            new Date(
+                dateValue
+            );
+
+
+        if (
+            isNaN(
+                date.getTime()
+            )
+        ) {
+
+            return "Recently";
+
+        }
+
+
+        return date.toLocaleString(
+            undefined,
+            {
+                day: "2-digit",
+                month: "short",
+                year: "numeric",
+                hour: "2-digit",
+                minute: "2-digit"
+            }
+        );
+
+    }
+    catch (error) {
+
+        return "Recently";
+
+    }
+
+}
+
+
+
+/* =====================================================
+   ESCAPE HTML
+===================================================== */
+
+function escapeHtml(
+    text
+) {
+
+    const div =
+        document.createElement(
+            "div"
+        );
+
+
+    div.textContent =
+        text;
+
+
+    return div.innerHTML;
+
+}
+
+
+
+/* =====================================================
+   INITIALIZE
+===================================================== */
+
+updateAuthNavbar();
+
+loadHistory();
+
+
+</script>
+
+
+</body>
+
+</html>

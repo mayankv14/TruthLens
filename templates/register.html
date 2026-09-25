@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="Create your TruthLens account."
+    >
+
+    <title>TruthLens | Create Account</title>
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+</head>
+
+
+<body>
+
+
+<header class="navbar">
+
+    <div class="nav-inner">
+
+        <a
+            href="/"
+            class="brand"
+        >
+
+            <div class="brand-mark">
+                TL
+            </div>
+
+            <div class="brand-name">
+                Truth<span>Lens</span>
+            </div>
+
+        </a>
+
+
+        <div class="nav-right">
+
+            <div class="status">
+
+                <span class="status-dot"></span>
+
+                System online
+
+            </div>
+
+            <a
+                href="/login"
+                class="nav-cta"
+            >
+                Sign in
+            </a>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+
+<main class="auth-page">
+
+
+    <section class="auth-card">
+
+
+        <div class="auth-header">
+
+            <div class="eyebrow">
+
+                <span class="eyebrow-dot"></span>
+
+                CREATE ACCOUNT
+
+            </div>
+
+
+            <h1>
+                Join <span>TruthLens.</span>
+            </h1>
+
+
+            <p>
+                Create an account to save your
+                verification activity and access
+                your personal history.
+            </p>
+
+        </div>
+
+
+
+        <form
+            id="registerForm"
+            class="auth-form"
+        >
+
+
+            <div class="form-group">
+
+                <label for="name">
+                    Full name
+                </label>
+
+                <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    placeholder="Enter your name"
+                    autocomplete="name"
+                    required
+                >
+
+            </div>
+
+
+
+            <div class="form-group">
+
+                <label for="email">
+                    Email address
+                </label>
+
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    placeholder="you@example.com"
+                    autocomplete="email"
+                    required
+                >
+
+            </div>
+
+
+
+            <div class="form-group">
+
+                <label for="password">
+                    Password
+                </label>
+
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    placeholder="At least 6 characters"
+                    autocomplete="new-password"
+                    minlength="6"
+                    required
+                >
+
+            </div>
+
+
+
+            <div
+                id="authMessage"
+                class="auth-message"
+            ></div>
+
+
+
+            <button
+                type="submit"
+                class="verify-btn auth-submit"
+                id="registerBtn"
+            >
+
+                <span id="registerText">
+                    Create account
+                </span>
+
+                <span class="arrow">
+                    →
+                </span>
+
+            </button>
+
+
+        </form>
+
+
+
+        <div class="auth-footer">
+
+            Already have an account?
+
+            <a href="/login">
+                Sign in
+            </a>
+
+        </div>
+
+
+    </section>
+
+
+</main>
+
+
+
+<script>
+
+const registerForm =
+    document.getElementById(
+        "registerForm"
+    );
+
+const registerBtn =
+    document.getElementById(
+        "registerBtn"
+    );
+
+const registerText =
+    document.getElementById(
+        "registerText"
+    );
+
+const authMessage =
+    document.getElementById(
+        "authMessage"
+    );
+
+
+registerForm.addEventListener(
+    "submit",
+    async function(event) {
+
+        event.preventDefault();
+
+
+        const name =
+            document.getElementById(
+                "name"
+            ).value.trim();
+
+
+        const email =
+            document.getElementById(
+                "email"
+            ).value.trim();
+
+
+        const password =
+            document.getElementById(
+                "password"
+            ).value;
+
+
+        authMessage.textContent =
+            "";
+
+
+        registerBtn.disabled =
+            true;
+
+        registerText.textContent =
+            "Creating account...";
+
+
+        try {
+
+            const response =
+                await fetch(
+                    "/api/auth/register",
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body:
+                            JSON.stringify({
+                                name,
+                                email,
+                                password
+                            })
+                    }
+                );
+
+
+            const data =
+                await response.json();
+
+
+            if (!response.ok) {
+
+                authMessage.textContent =
+                    data.error ||
+                    "Unable to create account.";
+
+                authMessage.classList.add(
+                    "error"
+                );
+
+                return;
+            }
+
+
+            /*
+             * Save JWT
+             */
+
+            localStorage.setItem(
+                "truthlens_token",
+                data.token
+            );
+
+
+            /*
+             * Save basic user information
+             */
+
+            localStorage.setItem(
+                "truthlens_user",
+                JSON.stringify(
+                    data.user
+                )
+            );
+
+
+            /*
+             * Registration successful
+             */
+
+            authMessage.textContent =
+                "Account created successfully.";
+
+            authMessage.classList.remove(
+                "error"
+            );
+
+            authMessage.classList.add(
+                "success"
+            );
+
+
+            setTimeout(
+                function() {
+
+                    window.location.href =
+                        "/";
+
+                },
+                700
+            );
+
+
+        }
+        catch (error) {
+
+            console.error(error);
+
+            authMessage.textContent =
+                "Unable to connect to the server.";
+
+            authMessage.classList.add(
+                "error"
+            );
+
+        }
+        finally {
+
+            registerBtn.disabled =
+                false;
+
+            registerText.textContent =
+                "Create account";
+
+        }
+
+    }
+);
+
+</script>
+
+
+</body>
+
+</html>
